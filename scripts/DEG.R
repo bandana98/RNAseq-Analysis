@@ -1,9 +1,13 @@
+##___________________ Installation
 install.packages("easypackages")
 
 BiocManager::install("EnhancedVolcano")
 BiocManager::install("org.Hs.eg.db")
 BiocManager::install("clusterProfiler")
 BiocManager::install("ReactomePA")
+pkgs <- c("EnhancedVolcano", "org.Hs.eg.db", "clusterProfiler", "ReactomePA", "DESeq2", )
+if (!requireNamespace(pkgs, quietly = TRUE))
+  BiocManager::install(pkgs)
 #___________________
 library(ggplot2)
 library(dplyr)
@@ -12,9 +16,14 @@ library(ReactomePA)
 library(enrichplot)
 library(RSQLite)
 library(biomaRt)
+library(clusterProfiler)
+library(org.Hs.eg.db)
 
+pkgs1 <- c("ggplot2", "dplyr")
+install.packages(pkgs1)
+#___________________
 
-
+##---- Analysis start
 setwd("/media/bandana/DATA/Bandana/trans/DEGs/Deseq")
 sample_ids <- c("SRR26707520", "SRR26707524", "SRR26707526", "SRR26707527", "SRR32259398", "SRR32259400")
 count_mat <- NULL
@@ -71,7 +80,6 @@ write.csv(as.data.frame(res), "deseq2_all_results.csv")
 write.csv(as.data.frame(res_rank), "deseq2_significant_DEGs.csv")
 
 ###----- Converting ensemble IDs into Gene Symbols
-library(org.Hs.eg.db)
 res_rank$symbol <- mapIds(org.Hs.eg.db,
                           keys = rownames(res_ranked),
                           column = "SYMBOL",
@@ -84,7 +92,6 @@ write.csv(as.data.frame(res_ranked), "significant_DEGs_with_symbols.csv")
 # MA plot
 plotMA(res, ylim = c(-5, 5))
 ####------------------------------------------------- Volcano plot------------------------------------------------------------------
-library(ggplot2)
 res_df <- as.data.frame(res)
 res_df <- res_df[!is.na(res_df$padj) & !is.na(res_df$log2FoldChange), ]
 
@@ -95,7 +102,7 @@ res_df$Significance[res_df$padj < 0.05 & abs(res_df$log2FoldChange) < 1] <- "Low
 res_df$Significance[res_df$padj >= 0.05 & abs(res_df$log2FoldChange) >= 1] <- "High LFC, not sig"
 
 # Create volcano plot
-ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = Significance)) +
+viol <- ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = Significance)) +
   geom_point(alpha = 0.7, size = 1.5) +
   scale_color_manual(values = c("Not Significant" = "grey",
                                 "Low LFC" = "orange",
@@ -108,10 +115,9 @@ ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj), color = Significance)) 
        x = "Log2 Fold Change",
        y = "-Log10 Adjusted P-value",
        color = "Legend")
-
+ggsave("Violin_plot_DEG.png", plot = viol, width = 8, height = 6, dpi = 600)
 ####---------------------------------------- Functional Enrichment analysis ---------------------------------------------------------------
 ## Gene Ontology
-library(clusterProfiler)
 gene_symb <- res_rank$symbol
 gene_symb <- gene_symbols[!is.na(gene_symbols)]
 gene_symb <- unique(gene_symbols)
@@ -204,7 +210,7 @@ c_kegg <- cnetplot(
   foldChange = NULL,
   hilight = "none",
   hilight_alpha = 0.3,)
-ggsave("dotplot_KEGG Pathway Enrichment_600dpi.png", plot = c_kegg, width = 8, height = 6, dpi = 600)
+ggsave("cnet_KEGG Pathway Enrichment_600dpi.png", plot = c_kegg, width = 8, height = 6, dpi = 600)
 
 c_react_p <- cnetplot(
   react_p,
@@ -220,4 +226,4 @@ c_react_p <- cnetplot(
   foldChange = NULL,
   hilight = "none",
   hilight_alpha = 0.3,)
-ggsave("dotplot_Reactome Pathway Enrichment_600dpi.png", plot = c_react_p, width = 8, height = 6, dpi = 600)
+ggsave("cnet_Reactome Pathway Enrichment_600dpi.png", plot = c_react_p, width = 8, height = 6, dpi = 600)
