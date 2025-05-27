@@ -23,9 +23,9 @@ for R1 in *1.fastq; do
     UNPAIRED_R2="${SAMPLE}_2_unpaired.fastq"
     
     # Run Trimmomatic
-    #java -jar "$TRIMMOMATIC_JAR" PE -threads "$THREADS" -phred33 "$R1" "$R2" "$TRIMMED_R1" "$UNPAIRED_R1" "$TRIMMED_R2" "$UNPAIRED_R2" ILLUMINACLIP:"$ADAPTERS":2:30:10:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+    java -jar "$TRIMMOMATIC_JAR" PE -threads "$THREADS" -phred33 "$R1" "$R2" "$TRIMMED_R1" "$UNPAIRED_R1" "$TRIMMED_R2" "$UNPAIRED_R2" ILLUMINACLIP:"$ADAPTERS":2:30:10:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
     
-    #echo "Trimming completed for sample: $SAMPLE"			
+    echo "Trimming completed for sample: $SAMPLE"			
 
     echo "Processing sample: $SAMPLE"
     
