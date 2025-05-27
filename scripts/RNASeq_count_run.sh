@@ -8,7 +8,7 @@ OUTPUT_DIR="/media/bandana/DATA/Bandana/trans/DEGs/control"
 REF_GENOME_DIR="/media/bandana/DATA/Bandana/trans/DEGs/control"
 REF_FASTA="/media/bandana/DATA/Bandana/trans/DEGs/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
 
-STAR --runThreadN 8 --runMode genomeGenerate --genomeDir $REF_GENOME_DIR --genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.fa --sjdbGTFfile Homo_sapiens.GRCh38.109.gtf --sjdbOverhang 100 --genomeSAindexNbases 12 --genomeChrBinNbits 18
+#STAR --runThreadN 8 --runMode genomeGenerate --genomeDir $REF_GENOME_DIR --genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.fa --sjdbGTFfile Homo_sapiens.GRCh38.109.gtf --sjdbOverhang 100 --genomeSAindexNbases 12 --genomeChrBinNbits 18
 
 for R1 in *1.fastq; do
     
